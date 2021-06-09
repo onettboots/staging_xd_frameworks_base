@@ -101,6 +101,7 @@ public class DozeSensors {
     private final SecureSettings mSecureSettings;
     private final DevicePostureController mDevicePostureController;
     private final AuthController mAuthController;
+    private final Callback mCallback;
     private final boolean mScreenOffUdfpsEnabled;
 
     // Sensors
@@ -175,10 +176,10 @@ public class DozeSensors {
         mDevicePosture = mDevicePostureController.getDevicePosture();
         mAuthController = authController;
 
-        mUdfpsEnrolled =
-                mAuthController.isUdfpsEnrolled(KeyguardUpdateMonitor.getCurrentUser());
-        mAuthController.addCallback(mAuthControllerCallback);
-        mTriggerSensors = new TriggerSensor[] {
+        boolean udfpsEnrolled =
+                authController.isUdfpsEnrolled(KeyguardUpdateMonitor.getCurrentUser());
+        boolean alwaysOn = mConfig.alwaysOnEnabled(UserHandle.USER_CURRENT);
+        mSensors = new TriggerSensor[] {
                 new TriggerSensor(
                         mSensorManager.getDefaultSensor(Sensor.TYPE_SIGNIFICANT_MOTION),
                         null /* setting */,
@@ -226,7 +227,7 @@ public class DozeSensors {
                         findSensor(config.udfpsLongPressSensorType()),
                         "doze_pulse_on_auth",
                         true /* settingDef */,
-                        udfpsLongPressConfigured(),
+                        udfpsEnrolled && (alwaysOn || mScreenOffUdfpsEnabled),
                         DozeLog.REASON_SENSOR_UDFPS_LONG_PRESS,
                         true /* reports touch coordinates */,
                         true /* touchscreen */,
@@ -466,7 +467,6 @@ public class DozeSensors {
         pw.println("mSelectivelyRegisterProxSensors=" + mSelectivelyRegisterProxSensors);
         pw.println("mListeningProxSensors=" + mListeningProxSensors);
         pw.println("mScreenOffUdfpsEnabled=" + mScreenOffUdfpsEnabled);
-        pw.println("mUdfpsEnrolled=" + mUdfpsEnrolled);
         IndentingPrintWriter idpw = new IndentingPrintWriter(pw);
         idpw.increaseIndent();
         for (TriggerSensor s : mTriggerSensors) {

@@ -553,20 +553,11 @@ public class KeyguardUpdateMonitorTest extends SysuiTestCase {
     }
 
     @Test
-    public void testNoStartAuthenticate_whenAboutToShowBouncer() {
-        mKeyguardUpdateMonitor.sendKeyguardBouncerChanged(
-                /* bouncerIsOrWillBeShowing */ true, /* bouncerFullyShown */ false);
-
-        verify(mFaceManager, never()).authenticate(any(), any(), any(), any(), anyInt(),
-                anyBoolean());
-    }
-
-    @Test
     public void testTriesToAuthenticate_whenKeyguard() {
         mKeyguardUpdateMonitor.dispatchStartedWakingUp();
         mTestableLooper.processAllMessages();
         mKeyguardUpdateMonitor.onKeyguardVisibilityChanged(true);
-        verify(mFaceManager).authenticate(any(), any(), any(), any(), anyInt(), anyBoolean());
+        verify(mFaceManager).authenticate(any(), any(), any(), any(), anyInt());
     }
 
     @Test
@@ -1189,8 +1180,7 @@ public class KeyguardUpdateMonitorTest extends SysuiTestCase {
                     mBroadcastDispatcher, mDumpManager,
                     mBackgroundExecutor, mMainExecutor,
                     mStatusBarStateController, mLockPatternUtils,
-                    mAuthController, mTelephonyListenerManager,
-                    mInteractionJankMonitor, mLatencyTracker, mActiveUnlockConfig);
+                    mAuthController, mTelephonyListenerManager, mFeatureFlags);
             setStrongAuthTracker(KeyguardUpdateMonitorTest.this.mStrongAuthTracker);
         }
 
