@@ -494,16 +494,6 @@ public final class CachedAppOptimizer {
                     pw.println("    " + app.mOptRecord.getFreezeUnfreezeTime()
                             + ": " + app.getPid() + " " + app.processName);
                 }
-
-                if (!mPendingCompactionProcesses.isEmpty()) {
-                    pw.println("  Pending compactions:");
-                    size = mPendingCompactionProcesses.size();
-                    for (int i = 0; i < size; i++) {
-                        ProcessRecord app = mPendingCompactionProcesses.get(i);
-                        pw.println("    pid: " + app.getPid() + ". name: " + app.processName
-                                + ". hasPendingCompact: " + app.mOptRecord.hasPendingCompact());
-                    }
-                }
             }
             if (DEBUG_COMPACTION) {
                 for (Map.Entry<Integer, LastCompactionStats> entry
