@@ -19,6 +19,8 @@
     <java-symbol type="bool" name="config_cleanupUnusedFingerprints" />
     <!-- Whether to cancel fingerprint operation if not idle -->
     <java-symbol type="bool" name="config_fpCancelIfNotIdle" />
+    <!-- Whether devices suports in-display fingerprint when screen is off -->
+    <java-symbol type="bool" name="config_supportScreenOffUdfps" />
 
     <!-- Package Manager -->
     <java-symbol type="array" name="config_deviceDisabledComponents" />
