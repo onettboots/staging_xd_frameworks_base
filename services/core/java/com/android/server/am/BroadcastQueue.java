@@ -387,15 +387,6 @@ public final class BroadcastQueue {
         }
     }
 
-    /**
-     * Called by ActivityManagerService to notify that the uid has process started, if there is any
-     * deferred BOOT_COMPLETED broadcast, the BroadcastDispatcher can dispatch the broadcast now.
-     * @param uid
-     */
-    public void updateUidReadyForBootCompletedBroadcastLocked(int uid) {
-        mDispatcher.updateUidReadyForBootCompletedBroadcastLocked(uid);
-    }
-
     public boolean sendPendingBroadcastsLocked(ProcessRecord app) {
         boolean didSomething = false;
         final BroadcastRecord br = mPendingBroadcast;
