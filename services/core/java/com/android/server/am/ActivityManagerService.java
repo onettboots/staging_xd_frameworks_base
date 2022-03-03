@@ -17378,8 +17378,9 @@ public class ActivityManagerService extends IActivityManager.Stub
         }
 
         @Override
-        public void addPendingTopUid(int uid, int pid, @Nullable IApplicationThread thread) {
-            final boolean isNewPending = mPendingStartActivityUids.add(uid, pid);
+        public void addPendingTopUid(int uid, int pid) {
+            mPendingStartActivityUids.add(uid, pid);
+
             // If the next top activity is in cached and frozen mode, WM should raise its priority
             // to unfreeze it. This is done by calling AMS.updateOomAdj that will lower its oom adj.
             // However, WM cannot hold the AMS clock here so the updateOomAdj operation is performed
@@ -17387,41 +17388,7 @@ public class ActivityManagerService extends IActivityManager.Stub
             // next top activity on time. This race will fail the following binder transactions WM
             // sends to the activity. After this race issue between WM/ATMS and AMS is solved, this
             // workaround can be removed. (b/213288355)
-            if (isNewPending && mOomAdjuster != null) { // It can be null in unit test.
-                mOomAdjuster.mCachedAppOptimizer.unfreezeProcess(pid);
-            }
-            // We need to update the network rules for the app coming to the top state so that
-            // it can access network when the device or the app is in a restricted state
-            // (e.g. battery/data saver) but since waiting for updateOomAdj to complete and then
-            // informing NetworkPolicyManager might get delayed, informing the state change as soon
-            // as we know app is going to come to the top state.
-            if (isNewPending && mNetworkPolicyUidObserver != null) {
-                try {
-                    final long procStateSeq = mProcessList.getNextProcStateSeq();
-                    mNetworkPolicyUidObserver.onUidStateChanged(uid, PROCESS_STATE_TOP,
-                            procStateSeq, PROCESS_CAPABILITY_ALL);
-                    if (thread != null && shouldWaitForNetworkRulesUpdate(uid)) {
-                        thread.setNetworkBlockSeq(procStateSeq);
-                    }
-                } catch (RemoteException e) {
-                    Slog.d(TAG, "Error calling setNetworkBlockSeq", e);
-                }
-            }
-        }
-
-        private boolean shouldWaitForNetworkRulesUpdate(int uid) {
-            synchronized (mUidNetworkBlockedReasons) {
-                // TODO: We can reuse this data in
-                // ProcessList#incrementProcStateSeqAndNotifyAppsLOSP instead of calling into
-                // NetworkManagementService.
-                final int uidBlockedReasons = mUidNetworkBlockedReasons.get(
-                        uid, BLOCKED_REASON_NONE);
-                // We should only inform the uid to block if it is currently blocked but will be
-                // unblocked once it comes to the TOP state.
-                return uidBlockedReasons != BLOCKED_REASON_NONE
-                        && updateBlockedReasonsWithProcState(uidBlockedReasons, PROCESS_STATE_TOP)
-                        == BLOCKED_REASON_NONE;
-            }
+            mOomAdjuster.mCachedAppOptimizer.unfreezeProcess(pid);
         }
 
         @Override
