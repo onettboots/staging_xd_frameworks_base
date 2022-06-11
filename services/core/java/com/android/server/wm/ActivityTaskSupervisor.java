@@ -1646,6 +1646,22 @@ public class ActivityTaskSupervisor implements RecentTasks.Callbacks {
 
         // Determine if the process(es) for this task should be killed.
         final String pkg = component.getPackageName();
+
+        if (mService.mAppStandbyInternal.isStrictStandbyPolicyEnabled() &&
+                getAppOpsManager().checkOpNoThrow(
+                        AppOpsManager.OP_RUN_ANY_IN_BACKGROUND,
+                        task.effectiveUid, pkg) != AppOpsManager.MODE_ALLOWED) {
+            try {
+                ActivityManager.getService().forceStopPackage(pkg, task.mUserId);
+                return;
+            } catch (RemoteException e) {
+                Slog.e(TAG, "Force stop failed, falling back to old path...");
+            } finally {
+                mService.mAppStandbyInternal.restrictApp(
+                        pkg, task.mUserId, REASON_MAIN_FORCED_BY_USER, 0);
+            }
+        }
+
         ArrayList<Object> procsToKill = new ArrayList<>();
         ArrayMap<String, SparseArray<WindowProcessController>> pmap =
                 mService.mProcessNames.getMap();
