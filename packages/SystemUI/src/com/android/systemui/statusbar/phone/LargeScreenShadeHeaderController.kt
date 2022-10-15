@@ -179,6 +179,7 @@ class LargeScreenShadeHeaderController @Inject constructor(
         } else {
             listOf(header.context.getString(com.android.internal.R.string.status_bar_mobile))
         }
+
         qsCarrierGroupController = qsCarrierGroupControllerBuilder
                 .setQSCarrierGroup(header.findViewById(R.id.carrier_group))
                 .build()
@@ -209,6 +210,15 @@ class LargeScreenShadeHeaderController @Inject constructor(
                 FontSizeUtils.updateFontSizeFromStyle(clock, qsStatusStyle)
                 FontSizeUtils.updateFontSizeFromStyle(date, qsStatusStyle)
                 qsCarrierGroup.updateTextAppearance(qsStatusStyle)
+            }
+
+            override fun onThemeChanged() {
+                val colorPrimary = Utils.getColorAttrDefaultColor(header.context, android.R.attr.textColorPrimary)
+                val colorSecondary = Utils.getColorAttrDefaultColor(header.context, android.R.attr.textColorSecondary)
+
+                iconManager.setTint(colorPrimary)
+                clock.setTextColor(colorPrimary)
+                batteryIcon.updateColors(colorPrimary, colorSecondary, colorPrimary)
             }
         }
         configurationController.addCallback(listener)
