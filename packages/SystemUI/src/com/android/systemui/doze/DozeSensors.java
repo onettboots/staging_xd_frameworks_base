@@ -101,7 +101,6 @@ public class DozeSensors {
     private final SecureSettings mSecureSettings;
     private final DevicePostureController mDevicePostureController;
     private final AuthController mAuthController;
-    private final Callback mCallback;
     private final boolean mScreenOffUdfpsEnabled;
 
     // Sensors
@@ -176,10 +175,10 @@ public class DozeSensors {
         mDevicePosture = mDevicePostureController.getDevicePosture();
         mAuthController = authController;
 
-        boolean udfpsEnrolled =
-                authController.isUdfpsEnrolled(KeyguardUpdateMonitor.getCurrentUser());
-        boolean alwaysOn = mConfig.alwaysOnEnabled(UserHandle.USER_CURRENT);
-        mSensors = new TriggerSensor[] {
+        mUdfpsEnrolled =
+                mAuthController.isUdfpsEnrolled(KeyguardUpdateMonitor.getCurrentUser());
+        mAuthController.addCallback(mAuthControllerCallback);
+        mTriggerSensors = new TriggerSensor[] {
                 new TriggerSensor(
                         mSensorManager.getDefaultSensor(Sensor.TYPE_SIGNIFICANT_MOTION),
                         null /* setting */,
@@ -227,7 +226,7 @@ public class DozeSensors {
                         findSensor(config.udfpsLongPressSensorType()),
                         "doze_pulse_on_auth",
                         true /* settingDef */,
-                        udfpsEnrolled && (alwaysOn || mScreenOffUdfpsEnabled),
+                        udfpsLongPressConfigured(),
                         DozeLog.REASON_SENSOR_UDFPS_LONG_PRESS,
                         true /* reports touch coordinates */,
                         true /* touchscreen */,
