@@ -31,8 +31,9 @@ oneway interface IUdfpsOverlayController {
     // Check acquiredInfo for the acquired type (BiometricFingerprintConstants#FingerprintAcquired).
     // Check BiometricFingerprintConstants#shouldTurnOffHbm for whether the acquiredInfo
     // should turn off HBM.
-    void onAcquired(int sensorId, int acquiredInfo, int vendorCode);
+    void onAcquired(int sensorId, int acquiredInfo);
 
+    void onAcquiredVendor(int sensorId, int vendorCode);
     // Notifies of enrollment progress changes.
     void onEnrollmentProgress(int sensorId, int remaining);
 
