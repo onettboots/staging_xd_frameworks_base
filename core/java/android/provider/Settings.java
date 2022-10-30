@@ -11110,15 +11110,6 @@ public final class Settings {
         public static final String SCREEN_OFF_UDFPS_ENABLED = "screen_off_udfps_enabled";
 
         /**
-         * Whether strict standby policy should be used. When dismissing from recents,
-         * this will force stop apps with restricted battery usage and put them into
-         * RESTRICTED standby bucket. Also all restrictions will be imposed even when
-         * device is charging.
-         * @hide
-         */
-        public static final String STRICT_STANDBY_POLICY = "strict_standby_policy";
-
-        /**
          * These entries are considered common between the personal and the managed profile,
          * since the managed profile doesn't get to change them.
          */

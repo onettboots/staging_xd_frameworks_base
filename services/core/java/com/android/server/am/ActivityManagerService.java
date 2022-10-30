@@ -18522,12 +18522,4 @@ public class ActivityManagerService extends IActivityManager.Stub
             return mIsSwipeToScreenshotEnabled && SystemProperties.getBoolean("sys.android.screenshot", false);
         }
     }
-
-    boolean shouldSkipBootCompletedBroadcastForPackage(ApplicationInfo info) {
-        return (mActivityTaskManager.mAppStandbyInternal.isStrictStandbyPolicyEnabled()
-                || mOomAdjuster.mForceBackgroundFreezerEnabled) &&
-                getAppOpsManager().checkOpNoThrow(
-                        AppOpsManager.OP_RUN_ANY_IN_BACKGROUND,
-                        info.uid, info.packageName) != AppOpsManager.MODE_ALLOWED;
-    }
 }
