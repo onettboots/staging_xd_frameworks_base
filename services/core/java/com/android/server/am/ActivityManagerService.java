@@ -5117,7 +5117,7 @@ public class ActivityManagerService extends IActivityManager.Stub
             storageManager.commitChanges();
         } catch (Exception e) {
             PowerManager pm = (PowerManager)
-                     mInjector.getContext().getSystemService(Context.POWER_SERVICE);
+                     mContext.getSystemService(Context.POWER_SERVICE);
             pm.reboot("Checkpoint commit failed");
         }
 
@@ -6845,7 +6845,6 @@ public class ActivityManagerService extends IActivityManager.Stub
                 reportCurWakefulnessUsageEvent();
                 mActivityTaskManager.onScreenAwakeChanged(isAwake);
                 mOomAdjProfiler.onWakefulnessChanged(wakefulness);
-                mOomAdjuster.onWakefulnessChanged(wakefulness);
             }
             updateOomAdjLocked(OomAdjuster.OOM_ADJ_REASON_UI_VISIBILITY);
         }
@@ -18515,5 +18514,12 @@ public class ActivityManagerService extends IActivityManager.Stub
         synchronized (this) {
             return mIsSwipeToScreenshotEnabled && SystemProperties.getBoolean("sys.android.screenshot", false);
         }
+    }
+
+    boolean shouldSkipBootCompletedBroadcastForPackage(ApplicationInfo info) {
+	return mActivityTaskManager.mAppStandbyInternal.isStrictStandbyPolicyEnabled() &&
+                getAppOpsManager().checkOpNoThrow(
+                        AppOpsManager.OP_RUN_ANY_IN_BACKGROUND,
+                        info.uid, info.packageName) != AppOpsManager.MODE_ALLOWED;
     }
 }
