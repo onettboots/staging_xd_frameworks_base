@@ -8015,7 +8015,6 @@ public class ActivityManagerService extends IActivityManager.Stub
         mHiddenApiBlacklist.registerObserver();
         mSdkSandboxSettings.registerObserver();
         mPlatformCompat.registerContentObserver();
-        mOomAdjuster.registerContentObserver();
 
         mAppProfiler.retrieveSettings();
 
@@ -18449,6 +18448,11 @@ public class ActivityManagerService extends IActivityManager.Stub
         }
     }
 
+    @Override
+    public boolean isAppFreezerEnabled() {
+        return mOomAdjuster.mCachedAppOptimizer.useFreezer();
+    }
+
     /**
      * Resets the state of the {@link com.android.server.am.AppErrors} instance.
      * This is intended for testing within the CTS only and is protected by
@@ -18469,17 +18473,6 @@ public class ActivityManagerService extends IActivityManager.Stub
             return mOomAdjuster.mCachedAppOptimizer.enableFreezer(enable);
         } else {
             throw new SecurityException("Caller uid " + callerUid + " cannot set freezer state ");
-        }
-    }
-
-    @Override
-    public boolean isAppFreezerEnabled() {
-        final long token = Binder.clearCallingIdentity();
-
-        try {
-            return mOomAdjuster.mCachedAppOptimizer.useFreezer();
-        } finally {
-            Binder.restoreCallingIdentity(token);
         }
     }
 
